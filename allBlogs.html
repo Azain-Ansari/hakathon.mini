@@ -62,45 +62,112 @@
 
         
         
-        document.addEventListener("readystatechange",async (event) => {
-            console.log(`readystate: ${document.readyState}`)
-            if (document.readyState === "complete") {
-        // const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-        const q = collection(db, "posts");
-        // const unsubscribe = onSnapshot(q,async (querySnapshot) => {
-            const querySnapshot = await getDocs(q);
-            const postGrid = document.querySelector("#postDisplayGrid");
-            postGrid.innerHTML = '';
-            // console.log(doc)
-            console.log(querySnapshot.size);
+//         document.addEventListener("readystatechange",async (event) => {
+//             console.log(`readystate: ${document.readyState}`)
+//             if (document.readyState === "complete") {
+//         // const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+//         const q = collection(db, "posts");
+//         // const unsubscribe = onSnapshot(q,async (querySnapshot) => {
+//             const querySnapshot = await getDocs(q);
+//             const postGrid = document.querySelector("#postDisplayGrid");
+//             postGrid.innerHTML = '';
+//             // console.log(doc)
+//             console.log(querySnapshot.size);
            
 
-            querySnapshot.forEach(function (doc) {
+//             querySnapshot.forEach(function (doc) {
                 
-                    const data = doc.data();
-                    const postId = doc.id;
-                      console.log(data)
-                      console.log(postId)
-//                  
-  const postDiv=document.createElement('div');
-  const posting=`
-    <div class="picture"></div>
-    <div class="heading">${data.heading}</div>
-    <div class="information">azain ansari - August 16th,2023</div>
-    <div class="post-description">${data.description}</div>
+//                     const data = doc.data();
+//                     const postId = doc.id;
+//                       console.log(data)
+//                       console.log(postId)
+// //                  
+//   const postDiv=document.createElement('div');
+//   const posting=`
+//     <div class="picture"></div>
+//     <div class="heading">${data.heading}</div>
+//     <div class="information">azain ansari - August 16th,2023</div>
+//     <div class="post-description">${data.description}</div>
     
-`
+// `
 
-postDiv.innerHTML =posting
-postDiv.classList.add("post")
-postGrid.appendChild(postDiv)
+// postDiv.innerHTML =posting
+// postDiv.classList.add("post")
+// postGrid.appendChild(postDiv)
 
-                });
+//                 });
 
-            }
+//             }
 
-        })
+//         })
         
+const postGrid = document.querySelector("#postDisplayGrid");
+
+async function displayBlogs() {
+    const querySnapshot = await getDocs(collection(db, "posts"));
+    postGrid.innerHTML = '';
+
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const postId = doc.id;
+
+        const postDiv = document.createElement('div');
+        postDiv.innerHTML = `
+            <div class="picture"></div>
+            <div class="heading">${data.heading}</div>
+            <div class="information">azain ansari - August 16th,2023</div>
+            <div class="post-description">${data.description}</div>
+            <button type="button" class="deleteButton" data-id="${postId}">Delete</button>
+            <a href="edit.html?id=${postId}">Edit</a>
+        `;
+        postDiv.classList.add("post");
+        postGrid.appendChild(postDiv);
+
+        const deleteButton = postDiv.querySelector(".deleteButton");
+        deleteButton.addEventListener("click", async () => {
+            const blogId = deleteButton.getAttribute("data-id");
+            await deleteDoc(doc(db, "posts", blogId));
+            displayBlogs();
+        });
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    displayBlogs();
+});
+
+const urlParams = new URLSearchParams(window.location.search);
+const blogId = urlParams.get('id');
+
+const editForm = document.getElementById("editForm");
+
+async function getBlogData() {
+    const blogDoc = doc(db, "posts", blogId);
+    const docSnapshot = await getDoc(blogDoc);
+    const data = docSnapshot.data();
+    // Pre-fill the edit form fields with data
+    document.getElementById("updatedHeading").value = data.heading;
+    document.getElementById("updatedDescription").value = data.description;
+}
+
+editForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const updatedHeading = document.getElementById("updatedHeading").value;
+    const updatedDescription = document.getElementById("updatedDescription").value;
+
+    const blogDocRef = doc(db, "posts", blogId);
+    await updateDoc(blogDocRef, {
+        heading: updatedHeading,
+        description: updatedDescription
+    });
+
+    alert("Blog post updated successfully.");
+    window.location.href = "index.html";
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    getBlogData();
+});
     </script>
 
     
