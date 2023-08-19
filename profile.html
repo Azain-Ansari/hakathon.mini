@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Personal Blog app</title>
+
+
+    <!-- bootstap cdn link -->
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <!-- css -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="signup.css">
+
+</head>
+
+<body>
+    <div class="header">
+        <h1 class="main-heading">Personal Blogging App</h1>
+        <a class="sign-in" href="login.html">logOut</a>
+    </div>
+
+    <nav>
+        <h1>Profile</h1>
+    </nav>
+
+   
+       
+    <div class="hero">
+        <div class="card">
+            <img src="/images.jpg" alt="">
+            <h1>Inzamamm Malik</h1>
+            <h2>password</h2>
+            <div class="input-field-profile">
+                <!-- <i class="fa-solid fa-envelope"></i> -->
+                <input type="email" id="oldPassword" placeholder="Old password">
+                <br />
+                <br />
+                <input type="email" id="email" placeholder="New password">
+                <br />
+                <br />
+                <input type="email" id="email" placeholder="Repeat password">                
+            </div>
+            <button type="button" class="btn-profile">Update password</button>
+        </div>
+    </div>
+
+
+    <!-- bootstap -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+
+</body>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getFirestore, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAVvXSF1jI6KJ-uhQt7-g8Vl7NgI8gVP6A",
+  authDomain: "login-signup-page-62d6d.firebaseapp.com",
+  databaseURL: "https://login-signup-page-62d6d-default-rtdb.firebaseio.com",
+  projectId: "login-signup-page-62d6d",
+  storageBucket: "login-signup-page-62d6d.appspot.com",
+  messagingSenderId: "136515271677",
+  appId: "1:136515271677:web:eae6a08d0ddeaa57303794",
+  measurementId: "G-3Q79PDVY8H"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const updatePasswordButton = document.getElementById("updatePassword");
+    updatePasswordButton.addEventListener("click", async () => {
+        const oldPassword = document.getElementById("oldPassword").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const repeatPassword = document.getElementById("repeatPassword").value;
+
+        if (newPassword !== repeatPassword) {
+            alert("New password and Repeat password do not match.");
+            return;
+        }
+
+        // Here you can implement code to update the password.
+        // This example updates the password directly in Firestore for demonstration purposes.
+        // You should use a proper authentication API (like Firebase Authentication) for real applications.
+        try {
+            const userId = "your_user_id"; // Replace with the actual user ID
+            const userDocRef = doc(db, "users", userId);
+
+            // Update the password field in the user's document
+            await updateDoc(userDocRef, { password: newPassword });
+
+            alert("Password updated successfully.");
+            clearPasswordFields();
+        } catch (error) {
+            console.error("Error updating password:", error);
+            alert("An error occurred while updating the password.");
+        }
+    });
+
+    function clearPasswordFields() {
+        document.getElementById("oldPassword").value = "";
+        document.getElementById("newPassword").value = "";
+        document.getElementById("repeatPassword").value = "";
+    }
+</script>
+
+</html>
+
+
+
