@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 
@@ -38,9 +37,8 @@
         <div class="mb-3">
             <textarea class="form-control" id="titlePost" rows="3"
                 placeholder="what is your in mind"></textarea>
-            <button type="button" id="submit" class="btn">Publish Blog</button>
-            <button type="button" id="submit" class="btn"><a href="allBlogs.html">Show All Blog</a></button>
-            
+                <button id="button" class="btn">Submit blog</button>
+            <button type="button" id="submi" class="btn"><a href="allBlogs.html">Show All Blog</a></button>
         </div>
 
     </div>
@@ -48,7 +46,7 @@
     <div class="myBlog">My Blogs</div>
 
     <div class="post">
-        <div class="picture"></div>
+        <div class="picture"><img src="images.jpg"  alt="inzimam"> </div>
         <div class="heading">An Action Button Could Be Coming To The iphone 15</div>
         <div class="information">azain ansari - August 16th,2023</div>
         <div class="post-description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nihil dolore illo
@@ -67,58 +65,17 @@
         <button type="button" class="deleteButton" id="delete">Delete</button>
         <button type="button" class="EditButton" id="delete">Edit</button>
     </div>
-    <div class="editForm" id="editForm">
-        <!-- Edit form content -->
+
+  
+    <div id="postDisplay">
+        <!-- This is where the posts will be displayed -->
     </div>
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import {
-            collection, addDoc, getFirestore,
-            getDocs, onSnapshot, serverTimestamp,
-            query, orderBy, deleteDoc, doc, updateDoc
-        } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-        apiKey: "AIzaSyBY4I7RIPu32_ALN3Ra92KMl8bQv5f7VBI",
-        authDomain: "authentication-app-c3140.firebaseapp.com",
-        projectId: "authentication-app-c3140",
-        storageBucket: "authentication-app-c3140.appspot.com",
-        messagingSenderId: "857644973815",
-        appId: "1:857644973815:web:808f6f228614540e539df2"
-    };
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-
-
-        let element = document.querySelector("#submit")
-        element.addEventListener("click", async (event) => {
-            event.preventDefault();
-            alert("hello")
-            const heading = document.getElementById("headingPost").value;
-            console.log(heading)
-            const description = document.getElementById("titlePost").value
-            console.log(description)
-
-            const docRef = await addDoc(collection(db, "posts"), {
-                heading: heading,
-                description: description,
-                createdAt: serverTimestamp()
-            });
-            console.log("Document written with ID: ", docRef.id);
-
-            description = document.getElementById("titlePost").value="";
-         heading = document.getElementById("headingPost").value ="";
-
-        })
-        
-    </script>
+  <script type="module" src="script.js"></script>
 
 
     <!-- bootstap -->
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
         crossorigin="anonymous"></script>

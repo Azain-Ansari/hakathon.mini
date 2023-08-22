@@ -69,6 +69,11 @@
         </div>
     </div>
 
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script type="module">
 
         // Import the functions you need from the SDKs you need
@@ -76,19 +81,7 @@
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
        // import { getAuth, signInWithCustomToken } from "firebase/auth";
         import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-      
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-//         const firebaseConfig = {
-//     apiKey: "AIzaSyBY4I7RIPu32_ALN3Ra92KMl8bQv5f7VBI",
-//     authDomain: "authentication-app-c3140.firebaseapp.com",
-//     projectId: "authentication-app-c3140",
-//     storageBucket: "authentication-app-c3140.appspot.com",
-//     messagingSenderId: "857644973815",
-//     appId: "1:857644973815:web:808f6f228614540e539df2"
-//   };
+        
   const firebaseConfig = {
   apiKey: "AIzaSyAVvXSF1jI6KJ-uhQt7-g8Vl7NgI8gVP6A",
   authDomain: "login-signup-page-62d6d.firebaseapp.com",
@@ -99,75 +92,58 @@
   appId: "1:136515271677:web:eae6a08d0ddeaa57303794",
   measurementId: "G-3Q79PDVY8H"
 };
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);  
         
         const auth = getAuth();
-        let element=document.querySelector("#signUpForm");
-        element.addEventListener('submit',(event)=>{
-            console.log(element) ;
-            event.preventDefault();
+  
 
+let element = document.querySelector("#signUpForm");
+element.addEventListener('submit', async (event) => {
+  event.preventDefault();
 
+  let firstName = document.querySelector("#firstName").value;
+  let lastName = document.querySelector("#lastName").value;
+  let email = document.querySelector("#email").value;
+  let password = document.querySelector("#password").value;
+  let repeatPassword = document.querySelector("#repeatPassword").value;
 
-          let firstName = document.querySelector("#firstName").value;
-          let lastName = document.querySelector("#lastName").value;
-          let email = document.querySelector("#email").value;
-          let password = document.querySelector("#password").value;
-          let repeatPassword = document.querySelector("#repeatPassword").value;
-        if(password === repeatPassword) {
-         createUserWithEmailAndPassword(auth, email, password)
-         .then((userCredential) => {
-           // Signed in
-        const user = userCredential.user;
-          console.log(user)
-          console.log(user.email)
-          alert("registration successfully")
-          window.location="login.html";
-          // ...
-        })
-           .catch((error) => {
-           const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorMessage)
-            alert("registration does not occur successfully")
-            // ...
-          });
-          
-        }
-        else{
-          alert("registration does not occur successfully")
-        }
+  // Password validation: At least 8 characters and 1 special character
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+  if (!passwordRegex.test(password)) {
+    Swal.fire("Error", "Password must be at least 8 characters long and contain at least one special character.", "error");
+    return;
+  }
+
+  // Match password and repeat password
+  if (password !== repeatPassword) {
+    Swal.fire("Error", "Passwords do not match.", "error");
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    // Signed up
+    const user = userCredential.user;
+    console.log(user);
+    console.log(user.email);
+    Swal.fire("Success", "Registration successful.", "success");
+setTimeout(() => {
+    window.location = "login.html";
+
+}, 2000); 
+  } catch (error) {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    if (errorCode === "auth/email-already-in-use") {
+      Swal.fire("Error", "Email already in use. Please log in.", "error");
+    } else {
+      Swal.fire("Error", "Registration failed.", "error");
+    }
+  }
+});
         
-        })
-        
 
-
-
-
-
-
-
-        // var element=document.querySelector(".dummy");
-        // element.addEventListener("click",()=>{
-      
-// const auth = getAuth();
-// const user = auth.currentUser;
-// if (user !== null) {
-//   // The user object has basic properties such as display name, email, etc.
-//   const displayName = user.displayName;
-//   const email = user.email;
-//   const photoURL = user.photoURL;
-//   const emailVerified = user.emailVerified;
-
-//   // The user's ID, unique to the Firebase project. Do NOT use
-//   // this value to authenticate with your backend server, if
-//   // you have one. Use User.getToken() instead.
-//   const uid = user.uid;
-//   console.log(displayName,email,emailVerified,uid)
-// }
-//         })
       </script>
 
 

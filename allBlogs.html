@@ -1,5 +1,4 @@
-
-<!doctype html>
+<doctype html>
 <html lang="en">
 
 <head>
@@ -28,152 +27,269 @@
         <h1>Good Morning Readers</h1>
     </nav>
 
-       <div class="postDisplay" id="postDisplayGrid">
-        <div class="allBlog">All Blogs</div>
-  
   </div>
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { collection, addDoc, getFirestore,
-        getDocs, onSnapshot, serverTimestamp,
-        query, orderBy, deleteDoc, doc, updateDoc} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-    
-       
-        
-    const firebaseConfig = {
-        apiKey: "AIzaSyBY4I7RIPu32_ALN3Ra92KMl8bQv5f7VBI",
-        authDomain: "authentication-app-c3140.firebaseapp.com",
-        projectId: "authentication-app-c3140",
-        storageBucket: "authentication-app-c3140.appspot.com",
-        messagingSenderId: "857644973815",
-        appId: "1:857644973815:web:808f6f228614540e539df2"
-    };
+  <div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="postDisplay" id="postDiv">
+                <div class="allBlog">All Blogs</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+   <script type="module">
+   
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, addDoc, updateDoc, deleteDoc, serverTimestamp, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
+        const firebaseConfig = {
+            // ...
+            apiKey: "AIzaSyAVvXSF1jI6KJ-uhQt7-g8Vl7NgI8gVP6A",
+        authDomain: "login-signup-page-62d6d.firebaseapp.com",
+        databaseURL: "https://login-signup-page-62d6d-default-rtdb.firebaseio.com",
+        projectId: "login-signup-page-62d6d",
+        storageBucket: "login-signup-page-62d6d.appspot.com",
+        messagingSenderId: "136515271677",
+        appId: "1:136515271677:web:eae6a08d0ddeaa57303794",
+        measurementId: "G-3Q79PDVY8H"
+        };
 
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
+//     const postDisplay = document.getElementById("postDiv"); // Add this line to get the postDiv element
 
-//get the data from the firebase firestore
-    
+//     async function displayUserPosts(userId) {
+//         postDisplay.innerHTML = ''; // Clear previous content before displaying new posts
 
-        
-        
-//         document.addEventListener("readystatechange",async (event) => {
-//             console.log(`readystate: ${document.readyState}`)
-//             if (document.readyState === "complete") {
-//         // const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-//         const q = collection(db, "posts");
-//         // const unsubscribe = onSnapshot(q,async (querySnapshot) => {
+//         try {
+//             const q = query(collection(db, "posts"));
 //             const querySnapshot = await getDocs(q);
-//             const postGrid = document.querySelector("#postDisplayGrid");
-//             postGrid.innerHTML = '';
-//             // console.log(doc)
-//             console.log(querySnapshot.size);
-           
 
-//             querySnapshot.forEach(function (doc) {
-                
-//                     const data = doc.data();
-//                     const postId = doc.id;
-//                       console.log(data)
-//                       console.log(postId)
-// //                  
-//   const postDiv=document.createElement('div');
-//   const posting=`
-//     <div class="picture"></div>
-//     <div class="heading">${data.heading}</div>
-//     <div class="information">azain ansari - August 16th,2023</div>
-//     <div class="post-description">${data.description}</div>
-    
-// `
+//             querySnapshot.forEach((doc) => {
+//                 const data = doc.data();
+//                 const postDiv = createPostDiv(data, doc.id);
+//                 postDisplay.appendChild(postDiv);
+//             });
+//         } catch (error) {
+//             console.error("Error fetching user's blog posts:", error);
+//         }
+//     }
 
-// postDiv.innerHTML =posting
-// postDiv.classList.add("post")
-// postGrid.appendChild(postDiv)
+//         async function addBlogPost(userId, userName, heading, description) {
+//             await addDoc(collection(db, "posts"), {
+//                 userId: userId,
+//                 userName: userName,
+//                 heading: heading,
+//                 description: description,
+//                 imageUrl: null,
+//                 createdAt: serverTimestamp()
+//             });
+//         }
 
-//                 });
+      
 
+//         function createPostDiv(data, postId) {
+//     const postDiv = document.createElement('div');
+//     postDiv.classList.add("post");
+//     postDiv.innerHTML = `
+//         <div class="picture"><img src="${data.imageUrl}" alt="Blog Image"></div>
+//         <div class="heading">${data.heading}</div>
+//         <div class="information">${data.userName} - ${data.createdAt.toDate().toLocaleDateString()}</div>
+//         <div class="post-description">${data.description}</div>
+//         <button type="button" class="deleteButton" data-id="${postId}">Delete</button>
+//         <button type="button" class="editButton" data-id="${postId}">Edit</button>
+//     `;
+
+//     postDiv.querySelector('.deleteButton').addEventListener('click', () => {
+//         Swal.fire({
+//             icon: 'warning',
+//             title: 'Delete Post',
+//             text: 'Are you sure you want to delete this post?',
+//             showCancelButton: true,
+//             confirmButtonText: 'Delete',
+//             cancelButtonText: 'Cancel',
+//         }).then(async (result) => {
+//             if (result.isConfirmed) {
+//                 await deletePost(postId);
+//                 Swal.fire('Deleted!', 'Your post has been deleted.', 'success');
+//                 postDiv.remove();
 //             }
+//         });
+//     });
 
-//         })
+//     postDiv.querySelector('.editButton').addEventListener('click', () => {
+//         Swal.fire({
+//             title: 'Edit Post',
+//             html:
+//                 `<input id="editHeading" class="swal2-input" placeholder="Heading" value="${data.heading}">
+//                 <textarea id="editDescription" class="swal2-textarea" placeholder="Description">${data.description}</textarea>`,
+//             showCancelButton: true,
+//             confirmButtonText: 'Save',
+//             cancelButtonText: 'Cancel',
+//         }).then(async (result) => {
+//             if (result.isConfirmed) {
+//                 const editedHeading = document.getElementById('editHeading').value;
+//                 const editedDescription = document.getElementById('editDescription').value;
+
+//                 await updatePost(postId, editedHeading, editedDescription);
+//                 Swal.fire('Updated!', 'Your post has been updated.', 'success');
+
+//                 const updatedData = {
+//                     ...data,
+//                     heading: editedHeading,
+//                     description: editedDescription,
+//                 };
+//                 const updatedPostDiv = createPostDiv(updatedData, postId);
+//                 postDiv.replaceWith(updatedPostDiv);
+//             }
+//         });
+//     });
+
+//     async function deletePost(postId) {
+//         try {
+//             const postRef = doc(db, "posts", postId);
+//             await deleteDoc(postRef);
+//         } catch (error) {
+//             console.error("Error deleting post:", error);
+//         }
+//     }
+
+//     async function updatePost(postId, updatedHeading, updatedDescription) {
+//         try {
+//             const postRef = doc(db, "posts", postId);
+//             await updateDoc(postRef, {
+//                 heading: updatedHeading,
+//                 description: updatedDescription,
+//             });
+//         } catch (error) {
+//             console.error("Error updating post:", error);
+//         }
+//     }
+
+//     return postDiv;
+// }
+
+document.addEventListener("DOMContentLoaded", () => {
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            displayUserPosts(user.uid);
+        } 
+            else {
+            // User not logged in
+            const postDisplay = document.getElementById("postDiv");
+            postDisplay.innerHTML = '<p>You need to be logged in to view posts.</p>';
+        }
         
-const postGrid = document.querySelector("#postDisplayGrid");
+    });
+});
 
-async function displayBlogs() {
-    const querySnapshot = await getDocs(collection(db, "posts"));
-    postGrid.innerHTML = '';
+async function displayUserPosts(userId) {
+    const postDisplay = document.getElementById("postDiv");
+    postDisplay.innerHTML = '';
 
-    querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const postId = doc.id;
+    try {
+        const q = query(collection(db, "posts"));
+        const querySnapshot = await getDocs(q);
 
-        const postDiv = document.createElement('div');
-        postDiv.innerHTML = `
-            <div class="picture"></div>
-            <div class="heading">${data.heading}</div>
-            <div class="information">azain ansari - August 16th,2023</div>
-            <div class="post-description">${data.description}</div>
-            <button type="button" class="deleteButton" data-id="${postId}">Delete</button>
-            <a href="edit.html?id=${postId}">Edit</a>
-        `;
-        postDiv.classList.add("post");
-        postGrid.appendChild(postDiv);
-
-        const deleteButton = postDiv.querySelector(".deleteButton");
-        deleteButton.addEventListener("click", async () => {
-            const blogId = deleteButton.getAttribute("data-id");
-            await deleteDoc(doc(db, "posts", blogId));
-            displayBlogs();
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const postDiv = createPostDiv(data, doc.id);
+            postDisplay.appendChild(postDiv);
         });
-    });
+    } catch (error) {
+        console.error("Error fetching blog posts:", error);
+    }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    displayBlogs();
-});
+function createPostDiv(data, postId) {
+    const postDiv = document.createElement('div');
+    postDiv.classList.add("post");
+    postDiv.innerHTML = `
+        <div class="picture"><img src="${data.imageUrl}" alt="Blog Image"></div>
+        <div class="heading">${data.heading}</div>
+        <div class="information"> ${data.userName} - ${data.createdAt.toDate().toLocaleDateString()}</div>
+        <div class="post-description">${data.description}</div>
+        <button type="button" class="deleteButton" data-id="${postId}">Delete</button>
+        <button type="button" class="editButton" data-id="${postId}">Edit</button>
+    `;
 
-const urlParams = new URLSearchParams(window.location.search);
-const blogId = urlParams.get('id');
-
-const editForm = document.getElementById("editForm");
-
-async function getBlogData() {
-    const blogDoc = doc(db, "posts", blogId);
-    const docSnapshot = await getDoc(blogDoc);
-    const data = docSnapshot.data();
-    // Pre-fill the edit form fields with data
-    document.getElementById("updatedHeading").value = data.heading;
-    document.getElementById("updatedDescription").value = data.description;
-}
-
-editForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const updatedHeading = document.getElementById("updatedHeading").value;
-    const updatedDescription = document.getElementById("updatedDescription").value;
-
-    const blogDocRef = doc(db, "posts", blogId);
-    await updateDoc(blogDocRef, {
-        heading: updatedHeading,
-        description: updatedDescription
+    postDiv.querySelector('.deleteButton').addEventListener('click', () => {
+        const postId = postDiv.querySelector('.deleteButton').getAttribute('data-id');
+        confirmDelete(postId);
     });
 
-    alert("Blog post updated successfully.");
-    window.location.href = "index.html";
-});
+    postDiv.querySelector('.editButton').addEventListener('click', () => {
+        const postId = postDiv.querySelector('.editButton').getAttribute('data-id');
+        editPost(postId, data);
+    });
 
-document.addEventListener("DOMContentLoaded", () => {
-    getBlogData();
-});
-    </script>
+    return postDiv;
+}
 
-    
+async function confirmDelete(postId) {
+    const result = await Swal.fire({
+        icon: 'warning',
+        title: 'Delete Post',
+        text: 'Are you sure you want to delete this post?',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+    });
 
+    if (result.isConfirmed) {
+        await deletePost(postId);
+        Swal.fire('Deleted!', 'Your post has been deleted.', 'success');
+        displayUserPosts(); // Refresh the post display after deletion
+    }
+}
+
+async function deletePost(postId) {
+    try {
+        const postRef = doc(db, "posts", postId);
+        await deleteDoc(postRef);
+    } catch (error) {
+        console.error("Error deleting post:", error);
+    }
+}
+
+async function editPost(postId, postData) {
+    const result = await Swal.fire({
+        title: 'Edit Post',
+        html:
+            `<input id="editHeading" class="swal2-input" placeholder="Heading" value="${postData.heading}">
+            <textarea id="editDescription" class="swal2-textarea" placeholder="Description">${postData.description}</textarea>`,
+        showCancelButton: true,
+        confirmButtonText: 'Save',
+        cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+        const editedHeading = document.getElementById('editHeading').value;
+        const editedDescription = document.getElementById('editDescription').value;
+
+        await updatePost(postId, editedHeading, editedDescription);
+        Swal.fire('Updated!', 'Your post has been updated.', 'success');
+        displayUserPosts(); // Refresh the post display after editing
+    }
+}
+
+async function updatePost(postId, updatedHeading, updatedDescription) {
+    try {
+        const postRef = doc(db, "posts", postId);
+        await updateDoc(postRef, {
+            heading: updatedHeading,
+            description: updatedDescription,
+        });
+    } catch (error) {
+        console.error("Error updating post:", error);
+    }
+}
 
 </script>
-
 </body>
-</html>
+</html

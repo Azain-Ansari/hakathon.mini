@@ -1,22 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Personal Blog app</title>
-
-
-    <!-- bootstap cdn link -->
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <!-- css -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <!-- Include SweetAlert library -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="signup.css">
-
 </head>
-
 <body>
     <div class="header">
         <h1 class="main-heading">Personal Blogging App</h1>
@@ -27,42 +19,32 @@
         <h1>Profile</h1>
     </nav>
 
-   
-       
     <div class="hero">
         <div class="card">
-            <img src="/images.jpg" alt="">
-            <h1>Inzamamm Malik</h1>
-            <h2>password</h2>
+            <img id="profilePicture" src="local.jpg" width="230" height="200" alt="Profile Picture">
+            <input type="file" id="fileInput" accept="image/*">
+            <h1 id="userName">Username</h1>
+
             <div class="input-field-profile">
-                <!-- <i class="fa-solid fa-envelope"></i> -->
-                <input type="email" id="oldPassword" placeholder="Old password">
-                <br />
-                <br />
-                <input type="email" id="email" placeholder="New password">
-                <br />
-                <br />
-                <input type="email" id="email" placeholder="Repeat password">                
+                <input type="password" id="oldPassword" placeholder="Old password">
+                <br><br>
+                <input type="password" id="newPassword" placeholder="New password">
+                <br><br>
+                <input type="password" id="repeatPassword" placeholder="Repeat password">
             </div>
-            <button type="button" class="btn-profile">Update password</button>
+            <button type="button" class="btn-profile" id="updatePassword">Update Password</button>
+            <button type="button" class="btn-profile" id="uploadProfilePicture">Upload Profile Picture</button>
         </div>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAuth, updateProfile, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-    <!-- bootstap -->
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
-        crossorigin="anonymous"></script>
-
-</body>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getFirestore, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyAVvXSF1jI6KJ-uhQt7-g8Vl7NgI8gVP6A",
+        const firebaseConfig = {
+            // Your Firebase config here
+            apiKey: "AIzaSyAVvXSF1jI6KJ-uhQt7-g8Vl7NgI8gVP6A",
   authDomain: "login-signup-page-62d6d.firebaseapp.com",
   databaseURL: "https://login-signup-page-62d6d-default-rtdb.firebaseio.com",
   projectId: "login-signup-page-62d6d",
@@ -70,48 +52,89 @@
   messagingSenderId: "136515271677",
   appId: "1:136515271677:web:eae6a08d0ddeaa57303794",
   measurementId: "G-3Q79PDVY8H"
-    };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+        };
 
-    const updatePasswordButton = document.getElementById("updatePassword");
-    updatePasswordButton.addEventListener("click", async () => {
-        const oldPassword = document.getElementById("oldPassword").value;
-        const newPassword = document.getElementById("newPassword").value;
-        const repeatPassword = document.getElementById("repeatPassword").value;
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
 
-        if (newPassword !== repeatPassword) {
-            alert("New password and Repeat password do not match.");
-            return;
+        // Function to update user's profile photo URL
+        function updateProfilePhoto(user, photoURL) {
+            updateProfile(user, { photoURL }).then(() => {
+                console.log('Profile picture URL updated in user data');
+            }).catch((error) => {
+                console.error('Error updating profile picture URL in user data:', error);
+            });
         }
 
-        // Here you can implement code to update the password.
-        // This example updates the password directly in Firestore for demonstration purposes.
-        // You should use a proper authentication API (like Firebase Authentication) for real applications.
-        try {
-            const userId = "your_user_id"; // Replace with the actual user ID
-            const userDocRef = doc(db, "users", userId);
-
-            // Update the password field in the user's document
-            await updateDoc(userDocRef, { password: newPassword });
-
-            alert("Password updated successfully.");
-            clearPasswordFields();
-        } catch (error) {
-            console.error("Error updating password:", error);
-            alert("An error occurred while updating the password.");
+        // Function to display SweetAlert
+        function showSweetAlert(title, text, icon) {
+            Swal.fire(title, text, icon);
         }
-    });
 
-    function clearPasswordFields() {
-        document.getElementById("oldPassword").value = "";
-        document.getElementById("newPassword").value = "";
-        document.getElementById("repeatPassword").value = "";
-    }
-</script>
+        document.getElementById("uploadProfilePicture").addEventListener("click", function () {
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
 
+            if (!file) {
+                showSweetAlert("Error", "Please select a file.", "error");
+                return;
+            }
+
+            const user = auth.currentUser;
+            const storageRef = ref(storage, 'profilePictures/' + user.uid + '_' + file.name);
+
+            uploadBytes(storageRef, file).then(() => {
+                getDownloadURL(storageRef).then((downloadURL) => {
+                    // Update the profile picture's src attribute with the new URL
+                    document.getElementById("profilePicture").src = downloadURL;
+
+                    // Update user data with the new profile picture URL
+                    if (user) {
+                        updateProfilePhoto(user, downloadURL);
+                        showSweetAlert("Success", "Profile picture updated successfully!", "success");
+                    }
+                });
+            }).catch((error) => {
+                console.error('Error uploading profile picture:', error);
+                showSweetAlert("Error", "Failed to upload profile picture.", "error");
+            });
+        });
+
+        document.getElementById("updatePassword").addEventListener("click", function () {
+            const newPassword = document.getElementById("newPassword").value;
+            const repeatPassword = document.getElementById("repeatPassword").value;
+
+            // Validate password length and special character
+            const passwordPattern = /^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
+            if (!passwordPattern.test(newPassword)) {
+                showSweetAlert("Error", "Password must be at least 8 characters long and contain a special character.", "error");
+                return;
+            }
+
+            if (newPassword !== repeatPassword) {
+                showSweetAlert("Error", "New passwords do not match.", "error");
+                return;
+            }
+
+            const user = auth.currentUser;
+            const oldPassword = document.getElementById("oldPassword").value;
+            const credential = EmailAuthProvider.credential(user.email, oldPassword);
+
+            reauthenticateWithCredential(user, credential).then(() => {
+                updatePassword(user, newPassword).then(() => {
+                    showSweetAlert("Success", "Password updated successfully!", "success");
+                }).catch((error) => {
+                    console.error('Error updating password:', error);
+                    showSweetAlert("Error", "Failed to update password.", "error");
+                });
+            }).catch((error) => {
+                console.error('Error reauthenticating user:', error);
+                showSweetAlert("Error", "Incorrect old password.", "error");
+            });
+        });
+    </script>
+</body>
 </html>
-
-
-
